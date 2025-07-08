@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}My Travel Itineraries -  TripCraftAI{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<section class="py-4 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    <i class="fas fa-list me-3"></i>My Itineraries
+                </h1>
+                <p class="mb-0">Manage and track all your travel plans</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('index') }}" class="btn btn-accent btn-lg">
+                    <i class="fas fa-plus me-2"></i>Create New
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Itineraries List -->
+<section class="py-5">
+    <div class="container">
+        {% if itineraries %}
+        <div class="row g-4">
+            {% for itinerary in itineraries %}
+            <div class="col-lg-6">
+                <div class="itinerary-summary-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-1">{{ itinerary.destination }}</h5>
+                        <small class="text-muted">Created {{ itinerary.created_at.strftime('%b %d, %Y') }}</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="itinerary-meta mb-3">
+                            <span class="badge bg-primary me-2">
+                                <i class="fas fa-calendar-alt me-1"></i>{{ itinerary.duration }} Days
+                            </span>
+                            <span class="badge bg-accent text-dark">
+                                <i class="fas fa-rupee-sign me-1"></i>₹{{ "{:,.0f}".format(itinerary.budget) }}
+                            </span>
+                        </div>
+                        
+                        {% if itinerary.get_interests_list() %}
+                        <div class="interests-tags mb-3">
+                            {% for interest in itinerary.get_interests_list()[:3] %}
+                            <span class="interest-tag">{{ interest }}</span>
+                            {% endfor %}
+                            {% if itinerary.get_interests_list()|length > 3 %}
+                            <span class="interest-tag">+{{ itinerary.get_interests_list()|length - 3 }} more</span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <small class="text-muted">
+                            {% set total = itinerary.checkpoints|length %}
+                            {{ total }} activities planned
+                        </small>
+                        
+                        <div class="card-actions mt-3">
+                            <a href="{{ url_for('view_itinerary', itinerary_id=itinerary.id) }}" 
+                               class="btn btn-primary btn-sm me-2">
+                                <i class="fas fa-eye me-1"></i>View Details
+                            </a>
+                            <a href="{{ url_for('tracking', itinerary_id=itinerary.id) }}" 
+                               class="btn btn-success btn-sm me-2">
+                                <i class="fas fa-route me-1"></i>Track
+                            </a>
+                            <a href="{{ url_for('chatbot', itinerary_id=itinerary.id) }}" 
+                               class="btn btn-info btn-sm me-2">
+                                <i class="fas fa-robot me-1"></i>Assistant
+                            </a>
+                            <button onclick="bookWithAgoda('{{ itinerary.destination }}', '{{ itinerary.duration }}')" 
+                                    class="btn btn-warning btn-sm">
+                                <i class="fas fa-bed me-1"></i>Book Stay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="text-center py-5">
+                <i class="fas fa-map-marked-alt fa-4x text-muted mb-4"></i>
+                <h3 class="text-muted mb-3">No Itineraries Yet</h3>
+                <p class="text-muted mb-4">Start planning your perfect Indian adventure with AI-powered recommendations.</p>
+                <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-magic me-2"></i>Create Your First Itinerary
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

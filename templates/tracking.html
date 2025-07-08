@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Track Your Journey - {{ itinerary.destination }} -  TripCraftAI{% endblock %}
+
+{% block content %}
+<!-- Tracking Header -->
+<section class="py-4 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    <i class="fas fa-location-arrow me-3"></i>Live Tracking
+                </h1>
+                <p class="mb-0">{{ itinerary.destination }} - {{ itinerary.duration }} Days Journey</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{{ url_for('view_itinerary', itinerary_id=itinerary.id) }}" class="btn btn-accent btn-lg">
+                    <i class="fas fa-list me-2"></i>View Itinerary
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Current Status -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="current-status-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-2">
+                                <i class="fas fa-map-pin me-2 text-primary"></i>Current Status
+                            </h5>
+                            {% set next_checkpoint = checkpoints|rejectattr('is_completed')|first %}
+                            {% if next_checkpoint %}
+                            <div class="current-location">
+                                <div class="location-name">Next: {{ next_checkpoint.location }}</div>
+                                <div class="location-time">
+                                    <i class="fas fa-clock me-1"></i>Scheduled for {{ next_checkpoint.time }} on Day {{ next_checkpoint.day }}
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="current-location">
+                                <div class="location-name text-success">
+                                    <i class="fas fa-trophy me-2"></i>Journey Complete!
+                                </div>
+                                <div class="location-time">All checkpoints have been visited</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <button class="btn btn-primary" onclick="simulateLocation()">
+                                <i class="fas fa-crosshairs me-2"></i>Update Location
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Map Placeholder -->
+<section class="py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">
+                            <i class="fas fa-map me-2 text-primary"></i>Journey Map
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="map-container" id="journeyMap">
+                            <div class="map-placeholder">
+                                <div class="map-content">
+                                    <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">Interactive Map</h5>
+                                    <p class="text-muted">Your journey route with completed and upcoming checkpoints</p>
+                                    <div class="map-legend">
+                                        <div class="legend-item">
+                                            <span class="legend-dot completed"></span>Completed
+                                        </div>
+                                        <div class="legend-item">
+                                            <span class="legend-dot current"></span>Current
+                                        </div>
+                                        <div class="legend-item">
+                                            <span class="legend-dot pending"></span>Upcoming
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- React Tracker Component -->
+<section class="py-5">
+    <div class="container">
+        <div id="react-tracker" data-itinerary-id="{{ itinerary.id }}">
+            <!-- React ItineraryTracker component will be rendered here -->
+            <!-- Fallback content for non-JS users -->
+            <noscript>
+                <h3 class="text-primary mb-4">
+                    <i class="fas fa-route me-2"></i>Journey Timeline
+                </h3>
+                <div class="alert alert-info">
+                    Please enable JavaScript for enhanced tracking features.
+                </div>
+            </noscript>
+        </div>
+        
+        <!-- Fallback Timeline (hidden when React loads) -->
+        <div class="timeline" id="fallback-timeline" style="display: none;">
+            {% for checkpoint in checkpoints %}
+            <div class="timeline-item {{ 'completed' if checkpoint.is_completed else 'pending' }}">
+                <div class="timeline-marker">
+                    <i class="fas fa-{{ 'check' if checkpoint.is_completed else 'clock' }}"></i>
+                </div>
+                <div class="timeline-content">
+                    <div class="timeline-header">
+                        <h6 class="timeline-title">{{ checkpoint.location }}</h6>
+                        <span class="timeline-time">
+                            Day {{ checkpoint.day }} - {{ checkpoint.time }}
+                        </span>
+                    </div>
+                    <p class="timeline-description">{{ checkpoint.activity }}</p>
+                    {% if checkpoint.estimated_cost > 0 %}
+                    <div class="timeline-cost">
+                        <i class="fas fa-rupee-sign me-1"></i>₹{{ "{:,.0f}".format(checkpoint.estimated_cost) }}
+                    </div>
+                    {% endif %}
+                    {% if checkpoint.is_completed %}
+                    <div class="timeline-status completed">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Completed on {{ checkpoint.completed_at.strftime('%b %d, %Y at %I:%M %p') }}
+                        {% if checkpoint.notes %}
+                        <div class="mt-1">
+                            <small><i class="fas fa-sticky-note me-1"></i>{{ checkpoint.notes }}</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Live Updates -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-bell me-2 text-primary"></i>Live Updates
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="liveUpdates" class="live-updates">
+                            <div class="update-item">
+                                <div class="update-time">Just now</div>
+                                <div class="update-message">
+                                    <i class="fas fa-info-circle text-primary me-2"></i>
+                                    Tracking system is active and monitoring your journey
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let updateCount = 0;
+
+function simulateLocation() {
+    updateCount++;
+    const updatesContainer = document.getElementById('liveUpdates');
+    const newUpdate = document.createElement('div');
+    newUpdate.className = 'update-item';
+    newUpdate.innerHTML = `
+        <div class="update-time">${new Date().toLocaleTimeString()}</div>
+        <div class="update-message">
+            <i class="fas fa-location-arrow text-success me-2"></i>
+            Location updated successfully - GPS coordinates refreshed
+        </div>
+    `;
+    updatesContainer.insertBefore(newUpdate, updatesContainer.firstChild);
+    
+    // Keep only last 5 updates
+    while (updatesContainer.children.length > 5) {
+        updatesContainer.removeChild(updatesContainer.lastChild);
+    }
+    
+    // Show success message
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check me-2"></i>Updated!';
+    btn.classList.add('btn-success');
+    btn.classList.remove('btn-primary');
+    
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.classList.add('btn-primary');
+        btn.classList.remove('btn-success');
+    }, 2000);
+}
+
+// Simulate periodic updates
+setInterval(() => {
+    if (Math.random() > 0.7) { // 30% chance every 10 seconds
+        const updatesContainer = document.getElementById('liveUpdates');
+        const messages = [
+            'Weather conditions are favorable for your next destination',
+            'Traffic is light on your planned route',
+            'Local events may affect some locations today',
+            'New recommendations available based on your location'
+        ];
+        
+        const newUpdate = document.createElement('div');
+        newUpdate.className = 'update-item';
+        newUpdate.innerHTML = `
+            <div class="update-time">${new Date().toLocaleTimeString()}</div>
+            <div class="update-message">
+                <i class="fas fa-info-circle text-info me-2"></i>
+                ${messages[Math.floor(Math.random() * messages.length)]}
+            </div>
+        `;
+        updatesContainer.insertBefore(newUpdate, updatesContainer.firstChild);
+        
+        while (updatesContainer.children.length > 5) {
+            updatesContainer.removeChild(updatesContainer.lastChild);
+        }
+    }
+}, 10000);
+</script>
+{% endblock %}
