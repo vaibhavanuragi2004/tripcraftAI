@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Create Your Perfect Indian Travel Itinerary - TravelAI{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold text-primary mb-4">
+                    Plan Your Perfect <span class="text-accent">Indian Adventure</span>
+                </h1>
+                <p class="lead mb-4">
+                    AI-powered travel planning designed specifically for Indian tourists. 
+                    Get personalized itineraries with checkpoints, budget tracking, and local insights.
+                </p>
+                <div class="hero-features mb-4">
+                    <div class="feature-item">
+                        <i class="fas fa-robot text-accent me-2"></i>
+                        <span>AI-Powered Planning</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-map-marker-alt text-accent me-2"></i>
+                        <span>Checkpoint Tracking</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-rupee-sign text-accent me-2"></i>
+                        <span>Budget Management</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image">
+                    <img src="https://pixabay.com/get/g2a85fbcf46bd8380cd75feb1bce5241d8b9935f3bb98c9c5921c64d1b03efe4148e05ac8c0870506c00b65d13c643fecf57fd423e4ee9106f98685ce02ec3c00_1280.jpg" 
+                         alt="Indian landmarks" class="img-fluid rounded-4 shadow-lg">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Travel Planning Form -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-header bg-primary text-white text-center py-4">
+                        <h2 class="mb-0"><i class="fas fa-magic me-2"></i>Create Your Itinerary</h2>
+                        <p class="mb-0 opacity-75">Tell us about your travel preferences</p>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- React Enhanced Form Container -->
+                        <div id="react-itinerary-form">
+                            <!-- Loading state while React loads -->
+                            <div class="text-center py-4" id="form-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Loading enhanced form...</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Fallback form for users without JavaScript -->
+                        <noscript>
+                            <form action="{{ url_for('generate_itinerary') }}" method="POST" id="fallback-form">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    JavaScript is disabled. Using basic form.
+                                </div>
+                            <!-- Destination -->
+                            <div class="mb-4">
+                                <label for="destination" class="form-label fw-semibold">
+                                    <i class="fas fa-map-pin text-primary me-2"></i>Destination
+                                </label>
+                                <input type="text" class="form-control form-control-lg" id="destination" 
+                                       name="destination" placeholder="e.g., Goa, Kerala, Rajasthan, Himachal Pradesh" required>
+                                <div class="form-text">Enter your dream destination in India</div>
+                            </div>
+
+                            <!-- Travel Dates and Budget Row -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <label for="start_date" class="form-label fw-semibold">
+                                        <i class="fas fa-calendar-alt text-primary me-2"></i>Travel Dates
+                                    </label>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="date" class="form-control" id="start_date" 
+                                                   name="start_date" required>
+                                            <div class="form-text small">Start Date</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="date" class="form-control" id="end_date" 
+                                                   name="end_date" required>
+                                            <div class="form-text small">End Date</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="budget" class="form-label fw-semibold">
+                                        <i class="fas fa-rupee-sign text-primary me-2"></i>Budget
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" class="form-control form-control-lg" id="budget" 
+                                               name="budget" min="1000" placeholder="50000" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Interests -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    <i class="fas fa-heart text-primary me-2"></i>Travel Interests
+                                </label>
+                                <div class="form-text mb-3">Select all that apply to personalize your itinerary</div>
+                                <div class="row g-2">
+                                    <div class="col-md-4 col-6">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input" type="checkbox" id="history" name="interests" value="Historical Sites">
+                                            <label class="form-check-label" for="history">
+                                                <i class="fas fa-monument me-2"></i>Historical Sites
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-6">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input" type="checkbox" id="nature" name="interests" value="Nature & Wildlife">
+                                            <label class="form-check-label" for="nature">
+                                                <i class="fas fa-tree me-2"></i>Nature & Wildlife
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-6">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input" type="checkbox" id="beaches" name="interests" value="Beaches">
+                                            <label class="form-check-label" for="beaches">
+                                                <i class="fas fa-umbrella-beach me-2"></i>Beaches
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-6">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input" type="checkbox" id="culture" name="interests" value="Cultural Experiences">
+                                            <label class="form-check-label" for="culture">
+                                                <i class="fas fa-theater-masks me-2"></i>Cultural Experiences
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-6">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input" type="checkbox" id="adventure" name="interests" value="Adventure Sports">
+                                            <label class="form-check-label" for="adventure">
+                                                <i class="fas fa-mountain me-2"></i>Adventure Sports
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-6">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input" type="checkbox" id="food" name="interests" value="Food & Cuisine">
+                                            <label class="form-check-label" for="food">
+                                                <i class="fas fa-utensils me-2"></i>Food & Cuisine
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-6">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input" type="checkbox" id="shopping" name="interests" value="Shopping">
+                                            <label class="form-check-label" for="shopping">
+                                                <i class="fas fa-shopping-bag me-2"></i>Shopping
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-6">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input" type="checkbox" id="spiritual" name="interests" value="Spiritual & Religious">
+                                            <label class="form-check-label" for="spiritual">
+                                                <i class="fas fa-om me-2"></i>Spiritual & Religious
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-6">
+                                        <div class="form-check form-check-card">
+                                            <input class="form-check-input" type="checkbox" id="photography" name="interests" value="Photography">
+                                            <label class="form-check-label" for="photography">
+                                                <i class="fas fa-camera me-2"></i>Photography
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary btn-lg px-5 py-3" id="generateBtn">
+                                    <i class="fas fa-magic me-2"></i>Generate My Itinerary
+                                </button>
+                            </div>
+                        </form>
+                        </noscript>
+                                <div class="mt-3">
+                                    <button type="button" id="enableNotifications" class="btn btn-outline-secondary btn-sm">
+                                        <i class="fas fa-bell me-1"></i>Enable Weather Alerts
+                                    </button>
+                                </div>
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="fas fa-shield-alt me-1"></i>
+                                        Your data is secure and used only for generating your personalized itinerary
+                                    </small>
+                                </div>
+                                <div class="mt-3 text-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-handshake me-1"></i>
+                                        Partnered with <strong>Agoda</strong> for exclusive accommodation deals
+                                    </small>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold text-primary mb-3">Why Choose TravelAI?</h2>
+                <p class="lead text-muted">Designed specifically for Indian travelers</p>
+            </div>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h4>AI-Powered Intelligence</h4>
+                    <p>Our advanced AI understands Indian travel preferences, budget constraints, and cultural considerations to create perfect itineraries.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <h4>Checkpoint-Based Planning</h4>
+                    <p>Track your journey with detailed checkpoints, timings, and progress visualization for a seamless travel experience.</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h4>Smart Budget Management</h4>
+                    <p>Get accurate cost estimates, budget breakdowns, and money-saving tips tailored for Indian tourists.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('itineraryForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('generateBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating Your Itinerary...';
+    btn.disabled = true;
+});
+</script>
+{% endblock %}
