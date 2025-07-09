@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+
+{% block title %}Your Travel Itinerary - {{ itinerary.destination }} - TripCraftAI{% endblock %}
+
+{% block content %}
+
+<section class="py-4 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-6 fw-bold mb-2">
+                    <i class="fas fa-map-marked-alt me-3"></i>{{ itinerary.destination }}
+                </h1>
+                <div class="itinerary-meta">
+                    <span class="badge bg-secondary text-light me-2">
+                        <i class="fas fa-calendar-alt me-1"></i>{{ itinerary.duration }} Days
+                    </span>
+                    <span class="badge bg-secondary text-light me-2">
+                        <i class="fas fa-rupee-sign me-1"></i>₹{{ "{:,.0f}".format(itinerary.budget) }}
+                    </span>
+                    <span class="badge bg-secondary text-light">
+                        <i class="fas fa-clock me-1"></i>Created {{ itinerary.created_at.strftime('%b %d, %Y') }}
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end header-actions">
+                <a href="{{ url_for('tracking', itinerary_id=itinerary.id) }}" class="btn btn-accent btn-lg me-2">
+                    <i class="fas fa-location-arrow me-2"></i>Track Progress
+                </a>
+                <a href="/chatbot/{{ itinerary.id }}" class="btn btn-light btn-lg">
+                    <i class="fas fa-robot me-2"></i>Travel Assistant
+                </a>
+                <div id="react-weather" data-destination="{{ itinerary.destination }}" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Agoda Booking Banner -->
+<section class="py-3 bg-secondary">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="booking-icon me-3"><i class="fas fa-bed text-white" style="font-size: 2rem;"></i></div>
+                    <div>
+                        <h5 class="text-white mb-1 fw-bold">Book Your Stay with Our Partner</h5>
+                        <p class="text-white mb-0 opacity-90">Find accommodation in {{ itinerary.destination }} with exclusive deals</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="#" onclick="bookWithAgoda('{{ itinerary.destination }}', '{{ itinerary.duration }}')" class="btn btn-light btn-lg fw-bold px-4">
+                    <i class="fas fa-external-link-alt me-2"></i>Book on Agoda
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Train Booking Form Section -->
+<section class="py-4" style="background-color: rgb(var(--background));">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <div class="text-center mb-4">
+                    <h4 class="fw-bold"><i class="fas fa-train me-2"></i>Book Your Train</h4>
+                </div>
+                <form id="train-booking-form" class="row g-3 align-items-center bg-white p-4 rounded-3 shadow-sm">
+                    <div class="col-md-4">
+                        <label for="from-station" class="form-label fw-semibold">From</label>
+                        <input type="text" class="form-control form-control-lg" id="from-station" placeholder="e.g., Mumbai" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="to-station" class="form-label fw-semibold">To</label>
+                        <input type="text" class="form-control form-control-lg" id="to-station" value="{{ itinerary.destination }}" required>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="travel-date" class="form-label fw-semibold">Date</label>
+                        <input type="date" class="form-control form-control-lg" id="travel-date" required>
+                    </div>
+                    <div class="col-md-2 d-grid pt-4">
+                        <button type="submit" class="btn btn-primary btn-lg" id="search-trains-btn">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Progress Section -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row"><div class="col-12"><div class="progress-card">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-2"><i class="fas fa-chart-line me-2 text-primary"></i>Trip Progress</h5>
+                    <div class="progress progress-lg mb-2"><div class="progress-bar bg-success" style="width: {{ progress_percentage }}%"></div></div>
+                    <small class="text-muted">{{ completed_checkpoints }} of {{ total_checkpoints }} checkpoints completed ({{ "%.1f"|format(progress_percentage) }}%)</small>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="stats-grid">
+                        <div class="stat-item"><div class="stat-number text-primary">{{ total_checkpoints }}</div><div class="stat-label">Total Stops</div></div>
+                        <div class="stat-item"><div class="stat-number text-success">{{ completed_checkpoints }}</div><div class="stat-label">Completed</div></div>
+                        <div class="stat-item"><div class="stat-number text-warning">{{ total_checkpoints - completed_checkpoints }}</div><div class="stat-label">Remaining</div></div>
+                    </div>
+                    <div class="d-flex gap-2 mt-3 justify-content-md-end">
+                        <a href="{{ url_for('tracking', itinerary_id=itinerary.id) }}" class="btn btn-success btn-sm"><i class="fas fa-play me-1"></i>Start Journey</a>
+                        <a href="{{ url_for('chatbot', itinerary_id=itinerary.id) }}" class="btn btn-primary btn-sm"><i class="fas fa-robot me-1"></i>Travel Assistant</a>
+                        <a href="{{ url_for('download_itinerary_pdf', itinerary_id=itinerary.id) }}" class="btn btn-secondary btn-sm" download="{{ itinerary.destination.lower().replace(' ', '_') }}_itinerary.pdf"><i class="fas fa-file-pdf me-1"></i>Download PDF</a>
+                        <a href="{{ url_for('my_itineraries') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i>Back</a>
+                    </div>
+                </div>
+            </div>
+        </div></div></div>
+    </div>
+</section>
+
+<!-- Itinerary Content -->
+<section class="py-5">
+    <div class="container">
+        {% if itinerary.get_itinerary_data().get('overview') %}
+        <div class="row mb-5">
+            <div class="col-12"><div class="card border-0 shadow-sm"><div class="card-body p-4"><h4 class="card-title text-primary mb-3"><i class="fas fa-info-circle me-2"></i>Trip Overview</h4><p class="card-text lead">{{ itinerary.get_itinerary_data().get('overview') }}</p></div></div></div>
+        </div>
+        {% endif %}
+        <div class="row">
+            <div class="col-12">
+                <h3 class="text-primary mb-5 text-center"><i class="fas fa-route me-2"></i>Your Journey Timeline</h3>
+                <div class="timeline-container">
+                    {% for day_num in range(1, itinerary.duration + 1) %}
+                    {% set day_data = days_data.get(day_num, []) %}
+                    <div class="timeline-day" data-day="{{ day_num }}">
+                        <div class="day-header-timeline">
+                            <div class="day-circle"><span class="day-number">🧳</span></div>
+                            <div class="day-info">
+                                <h4 class="day-title">Day {{ day_num }}</h4>
+                                {% if day_data %}{% set day_completed = day_data|selectattr('is_completed')|list|length %}{% set day_total = day_data|length %}<div class="day-progress-info"><span class="progress-text">{{ day_completed }}/{{ day_total }} completed</span><div class="progress-bar-custom"><div class="progress-fill" style="width: {{ (day_completed / day_total * 100) if day_total > 0 else 0 }}%"></div></div></div>{% endif %}
+                            </div>
+                        </div>
+                        {% if day_data %}
+                        <div class="timeline-activities sortable-checkpoints" data-day="{{ day_num }}">
+                            {% for checkpoint in day_data %}
+                            <div class="timeline-item {{ 'completed' if checkpoint.is_completed else '' }}" data-checkpoint-id="{{ checkpoint.id }}">
+                                <div class="timeline-marker">
+                                    <div class="marker-dot {{ 'completed' if checkpoint.is_completed else '' }}"></div>
+                                    <div class="drag-handle"><i class="fas fa-grip-vertical"></i></div>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="activity-card">
+                                        <div class="activity-header">
+                                            <div class="activity-time"><i class="fas fa-clock me-2"></i>{{ checkpoint.time }}</div>
+                                            {% if checkpoint.estimated_cost > 0 %}<div class="activity-cost"><i class="fas fa-rupee-sign me-1"></i>₹{{ "{:,.0f}".format(checkpoint.estimated_cost) }}</div>{% endif %}
+                                        </div>
+                                        <div class="activity-main">
+                                            <h5 class="activity-location"><i class="fas fa-map-marker-alt me-2 text-primary"></i>{{ checkpoint.location }}<button type="button" class="btn btn-outline-primary btn-sm ms-2 map-btn pulse-btn" data-location="{{ checkpoint.location }}" data-activity="{{ checkpoint.activity }}" title="Show on map"><i class="fas fa-map"></i></button></h5>
+                                            <p class="activity-description">{{ checkpoint.activity }}</p>
+                                        </div>
+                                        {% if checkpoint.notes %}{% set notes_dict = {} %}{% for note_part in checkpoint.notes.split(', ') %}{% if ':' in note_part %}{% set key, value = note_part.split(':', 1) %}{% set _ = notes_dict.update({key: value}) %}{% endif %}{% endfor %}<div class="activity-details">{% if notes_dict.get('opening_hours') %}<div class="detail-item opening-hours"><i class="fas fa-clock me-2"></i><span>Open: {{ notes_dict.get('opening_hours') }}</span></div>{% endif %}{% if notes_dict.get('travel_time') %}<div class="detail-item travel-info"><i class="fas fa-route me-2"></i><span>{{ notes_dict.get('travel_time') }} {% if notes_dict.get('transport') %}via {{ notes_dict.get('transport') }}{% endif %} to next</span></div>{% endif %}{% if notes_dict.get('tips') %}<div class="detail-item travel-tips"><i class="fas fa-lightbulb me-2"></i><span>{{ notes_dict.get('tips') }}</span></div>{% endif %}</div>{% endif %}
+                                        {% if checkpoint.is_completed %}
+                                        <div class="completion-status"><div class="completed-badge"><i class="fas fa-check-circle me-2"></i>Completed on {{ checkpoint.completed_at.strftime('%b %d at %I:%M %p') }}</div></div>
+                                        {% else %}
+                                        <div class="completion-form"><form action="{{ url_for('complete_checkpoint', checkpoint_id=checkpoint.id) }}" method="POST" class="checkpoint-form"><div class="form-group"><input type="text" class="form-control" name="notes" placeholder="Add your experience notes..."><button type="submit" class="btn btn-success btn-complete"><i class="fas fa-check me-1"></i>Complete</button></div></form></div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="timeline-empty"><div class="empty-state"><i class="fas fa-calendar-times mb-3"></i><p>No activities planned for this day</p></div></div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% if itinerary.get_itinerary_data().get('travel_tips') %}
+        <div class="row mt-5">
+            <div class="col-12"><div class="card border-0 shadow-sm"><div class="card-body p-4"><h4 class="card-title text-primary mb-3"><i class="fas fa-lightbulb me-2"></i>Travel Tips</h4><ul class="list-unstyled">{% for tip in itinerary.get_itinerary_data().get('travel_tips', []) %}<li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>{{ tip }}</li>{% endfor %}</ul></div></div></div>
+        </div>
+        {% endif %}
+        {% if itinerary.get_itinerary_data().get('budget_breakdown') %}
+        <div class="row mt-4">
+            <div class="col-12"><div class="card border-0 shadow-sm"><div class="card-body p-4"><h4 class="card-title text-primary mb-3"><i class="fas fa-chart-pie me-2"></i>Budget Breakdown</h4><div class="row g-3">{% for category, amount in itinerary.get_itinerary_data().get('budget_breakdown', {}).items() %}<div class="col-md-6 col-lg-4"><div class="budget-item"><div class="budget-category">{{ category.title() }}</div><div class="budget-amount">₹{{ "{:,.0f}".format(amount) }}</div></div></div>{% endfor %}</div></div></div></div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Map Modal -->
+<div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="mapModalLabel"><i class="fas fa-map-marker-alt me-2"></i>Location Map</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body p-0"><div id="locationMap" style="height: 400px; width: 100%;"></div></div><div class="modal-footer"><div class="text-start flex-grow-1"><strong id="mapLocationName"></strong><p class="mb-0 text-muted" id="mapLocationActivity"></p></div><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let map = null;
+let currentMarker = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.map-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const locationName = this.getAttribute('data-location');
+            const activity = this.getAttribute('data-activity');
+            showLocationMap(locationName, activity);
+        });
+    });
+    
+    document.querySelectorAll('.sortable-checkpoints').forEach(container => {
+        new Sortable(container, {
+            handle: '.drag-handle',
+            animation: 300,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            onEnd: function(evt) { handleCheckpointReorder(evt); }
+        });
+    });
+    
+    document.getElementById('mapModal').addEventListener('hidden.bs.modal', function () {
+        if (map) { map.remove(); map = null; }
+        if (currentMarker) { currentMarker = null; }
+    });
+
+    const trainForm = document.getElementById('train-booking-form');
+    if (trainForm) {
+        const searchButton = document.getElementById('search-trains-btn');
+        document.getElementById('travel-date').min = new Date().toISOString().split("T")[0];
+        
+        async function fetchStationCode(cityName) {
+            try {
+                const response = await fetch('/api/get-station-code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ city: cityName })
+                });
+                if (!response.ok) return null;
+                const data = await response.json();
+                return data.code;
+            } catch (error) {
+                console.error('Error fetching station code:', error);
+                return null;
+            }
+        }
+
+        trainForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            searchButton.disabled = true;
+            searchButton.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`;
+            const fromCity = document.getElementById('from-station').value.trim();
+            const toCity = document.getElementById('to-station').value.trim();
+            const travelDate = document.getElementById('travel-date').value;
+
+            if (!fromCity || !toCity || !travelDate) {
+                alert('Please fill in all fields: From, To, and Date.');
+                searchButton.disabled = false;
+                searchButton.innerHTML = 'Search';
+                return;
+            }
+
+            const [fromCode, toCode] = await Promise.all([ fetchStationCode(fromCity), fetchStationCode(toCity) ]);
+
+            if (!fromCode) {
+                alert(`Sorry, we couldn't find a station code for "${fromCity}".`);
+                searchButton.disabled = false;
+                searchButton.innerHTML = 'Search';
+                return;
+            }
+            if (!toCode) {
+                alert(`Sorry, we couldn't find a station code for "${toCity}".`);
+                searchButton.disabled = false;
+                searchButton.innerHTML = 'Search';
+                return;
+            }
+
+            const [year, month, day] = travelDate.split('-');
+            const formattedDate = `${day}-${month}-${year}`;
+            const targetUrl = `https://www.confirmtkt.com/rbooking/trains/from/${fromCode}/to/${toCode}/${formattedDate}`;
+            window.open(targetUrl, '_blank');
+            searchButton.disabled = false;
+            searchButton.innerHTML = 'Search';
+        });
+    }
+});
+
+function handleCheckpointReorder(evt) {
+    const checkpointIds = [];
+    const container = evt.to;
+    container.querySelectorAll('.timeline-item').forEach(item => {
+        const checkpointId = item.getAttribute('data-checkpoint-id');
+        if (checkpointId) { checkpointIds.push(checkpointId); }
+    });
+    
+    fetch('/reorder_checkpoints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        body: JSON.stringify({ checkpoint_ids: checkpointIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) { location.reload(); }
+    })
+    .catch(error => { location.reload(); });
+}
+
+function showLocationMap(locationName, activity) {
+    document.getElementById('mapLocationName').textContent = locationName;
+    document.getElementById('mapLocationActivity').textContent = activity;
+    const mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
+    mapModal.show();
+    document.getElementById('mapModal').addEventListener('shown.bs.modal', function () {
+        initializeMap(locationName);
+    }, { once: true });
+}
+
+function initializeMap(locationName) {
+    if (map) { map.remove(); map = null; }
+    map = L.map('locationMap').setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+        maxZoom: 18
+    }).addTo(map);
+    searchLocation(locationName);
+}
+
+function searchLocation(locationName) {
+    const searchQuery = encodeURIComponent(locationName + ', India');
+    const nominatimUrl = 'https://nominatim.openstreetmap.org/search?format=json&q=' + searchQuery + '&limit=1';
+    
+    fetch(nominatimUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const result = data[0];
+                const lat = parseFloat(result.lat);
+                const lon = parseFloat(result.lon);
+                map.setView([lat, lon], 14);
+                if (currentMarker) { map.removeLayer(currentMarker); }
+                currentMarker = L.marker([lat, lon]).addTo(map).bindPopup('<strong>' + locationName + '</strong><br>' + result.display_name).openPopup();
+            } else {
+                alert('Location not found on map. Showing general area.');
+            }
+        })
+        .catch(error => {
+            console.error('Error searching for location:', error);
+            alert('Error loading map. Please check your internet connection.');
+        });
+}
+</script>
+{% endblock %}
