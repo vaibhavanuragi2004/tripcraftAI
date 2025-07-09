@@ -1,7 +1,7 @@
 # ✈️🤖 TripCraftAI
 
 **TripCraftAI** is an intelligent travel itinerary generation and management application.  
-It leverages the power of Large Language Models (LLMs) to create **personalized, culturally-aware, and optimized travel plans** for tourists in India. Beyond planning, it serves as a **travel companion** — with live tracking, weather alerts, budget insight, and contextual AI help.
+It leverages the power of Large Language Models (LLMs) to create **personalized, culturally-aware, and optimized travel plans** for tourists in India. Beyond planning, it serves as a **travel companion** — with live tracking, weather alerts, budget insight, train and hotel booking website redirection and contextual AI help.
 
 
 
