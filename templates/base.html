@@ -1,100 +1,443 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Travel Planner - AI-Powered Itineraries for Indian Tourists{% endblock %}</title>
-    
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/react-components.css') }}">
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
-                <i class="fas fa-map-marked-alt me-2"></i> TripCraftAI
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">
-                            <i class="fas fa-home me-1"></i>Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('my_itineraries') }}">
-                            <i class="fas fa-list me-1"></i>My Itineraries
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('chatbot') }}">
-                            <i class="fas fa-robot me-1"></i>Travel Companion
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {% block title %}Travel Planner - AI-Powered Itineraries for Indian
+            Tourists{% endblock %}
+        </title>
 
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="container mt-3">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
-                        <i class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' }} me-2"></i>
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+       
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        />
+
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+
+        <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        />
+        
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='css/style.css') }}"
+        />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='css/react-components.css') }}"
+        />
+
+
+        <style>
+            :root {
+                --bs-primary: #8b4513;
+                --bs-primary-rgb: 139, 69, 19;
+                --bs-secondary: #a0522d;
+                --bs-secondary-rgb: 160, 82, 45;
+                --bs-success: #cd853f;
+                --bs-success-rgb: 205, 133, 63;
+                --bs-info: #deb887;
+                --bs-info-rgb: 222, 184, 135;
+                --bs-warning: #f5deb3;
+                --bs-warning-rgb: 245, 222, 179;
+                --bs-light: #faf0e6;
+                --bs-light-rgb: 250, 240, 230;
+                --bs-dark: #654321;
+                --bs-dark-rgb: 101, 67, 33;
+            }
+
+            body {
+                background-color: #faf0e6 !important;
+                color: #654321 !important;
+            }
+
+            .navbar {
+                background: linear-gradient(
+                    135deg,
+                    #8b4513,
+                    #a0522d
+                ) !important;
+            }
+
+            .navbar-brand {
+                color: #faf0e6 !important;
+            }
+
+            .navbar .nav-link {
+                color: #faf0e6 !important;
+            }
+
+            .navbar .nav-link:hover {
+                color: #f5deb3 !important;
+            }
+
+            .btn-primary {
+                background-color: #8b4513 !important;
+                border-color: #8b4513 !important;
+                color: #faf0e6 !important;
+            }
+
+            .btn-primary:hover {
+                background-color: #a0522d !important;
+                border-color: #a0522d !important;
+                color: #faf0e6 !important;
+            }
+
+            .btn-success {
+                background-color: #cd853f !important;
+                border-color: #cd853f !important;
+                color: #faf0e6 !important;
+            }
+
+            .btn-success:hover {
+                background-color: #a0522d !important;
+                border-color: #a0522d !important;
+            }
+
+            .btn-info {
+                background-color: #deb887 !important;
+                border-color: #deb887 !important;
+                color: #654321 !important;
+            }
+
+            .btn-warning {
+                background-color: #f5deb3 !important;
+                border-color: #f5deb3 !important;
+                color: #654321 !important;
+            }
+
+
+            .bg-warning,
+            .text-warning,
+            .badge.bg-warning,
+            .alert-warning,
+            [style*="background-color: yellow"],
+            [style*="background: yellow"],
+            [style*="background-color: #ffc107"],
+            [style*="background: #ffc107"],
+            [style*="background-color: #ffff"],
+            [style*="color: yellow"],
+            [style*="color: #ffc107"],
+            span[style*="background-color: yellow"],
+            div[style*="background-color: yellow"],
+            .badge[style*="background-color: #ffc107"] {
+                background: linear-gradient(135deg, #8B4513, #A0522D) !important;
+                color: #FAF0E6 !important;
+                border-color: #F5DEB3 !important;
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-weight: 600;
+            }
+
+
+            .badge:contains("₹"),
+            span:contains("₹"),
+            .activity-cost,
+            .checkpoint-cost,
+            .budget-amount {
+                background: linear-gradient(135deg, #8B4513, #A0522D) !important;
+                color: #FAF0E6 !important;
+                border: 1px solid #F5DEB3 !important;
+                padding: 4px 8px;
+                border-radius: 8px;
+                font-weight: 600;
+            }
+
+            .card {
+                background-color: white !important;
+                border: 1px solid #f5deb3 !important;
+                box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1) !important;
+            }
+
+            .card:hover {
+                border-color: #d2b48c !important;
+                box-shadow: 0 8px 25px rgba(139, 69, 19, 0.15) !important;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+                color: #654321 !important;
+            }
+
+            .text-primary {
+                color: #8b4513 !important;
+            }
+
+            .bg-primary {
+                background-color: #8b4513 !important;
+            }
+
+            .footer,
+            .bg-dark {
+                background: linear-gradient(
+                    135deg,
+                    #8b4513,
+                    #a0522d
+                ) !important;
+                color: #faf0e6 !important;
+            }
+
+            .progress-bar {
+                background-color: #8b4513 !important;
+            }
+
+            .badge.bg-primary {
+                background-color: #8b4513 !important;
+            }
+
+            .badge.bg-success {
+                background-color: #cd853f !important;
+            }
+
+            .alert-success {
+                background-color: rgba(205, 133, 63, 0.1) !important;
+                border-color: #cd853f !important;
+                color: #654321 !important;
+            }
+
+            .alert-danger {
+                background-color: rgba(139, 69, 19, 0.1) !important;
+                border-color: #8b4513 !important;
+                color: #654321 !important;
+            }
+
+            .form-control:focus {
+                border-color: #8b4513 !important;
+                box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25) !important;
+            }
+
+            .form-select:focus {
+                border-color: #8b4513 !important;
+                box-shadow: 0 0 0 0.25rem rgba(139, 69, 19, 0.25) !important;
+            }
+
+            a {
+                color: #8b4513 !important;
+            }
+
+            a:hover {
+                color: #a0522d !important;
+            }
+
+
+            .hero-section {
+                background: linear-gradient(
+                    135deg,
+                    rgba(139, 69, 19, 0.1),
+                    rgba(160, 82, 45, 0.1)
+                ) !important;
+            }
+
+            .feature-card {
+                background: white !important;
+                border: 1px solid #f5deb3 !important;
+            }
+
+            .feature-card:hover {
+                border-color: #8b4513 !important;
+                transform: translateY(-5px);
+            }
+
+            .checkpoint-card {
+                background: white !important;
+                border: 2px solid #f5deb3 !important;
+            }
+
+            .checkpoint-card:hover {
+                border-color: #d2b48c !important;
+            }
+
+            .day-header {
+                background: linear-gradient(
+                    135deg,
+                    #8b4513,
+                    #a0522d
+                ) !important;
+                color: #faf0e6 !important;
+            }
+
+            .activity-card {
+                background: white !important;
+                border: 1px solid #f5deb3 !important;
+            }
+
+            /* Itinerary Summary Cards */
+            .itinerary-summary-card {
+                border: 1px solid #f5deb3 !important;
+                border-radius: 15px !important;
+                overflow: hidden;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 15px rgba(139, 69, 19, 0.1) !important;
+            }
+
+            .itinerary-summary-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(139, 69, 19, 0.15) !important;
+                border-color: #8b4513 !important;
+            }
+
+            .itinerary-summary-card .card-header {
+                background: linear-gradient(
+                    135deg,
+                    #8b4513,
+                    #a0522d
+                ) !important;
+                color: #faf0e6 !important;
+                border-bottom: none !important;
+            }
+
+            .itinerary-summary-card .card-body {
+                background: white !important;
+            }
+
+            .interest-tag {
+                background-color: #f5deb3 !important;
+                color: #654321 !important;
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 0.875rem;
+                margin-right: 6px;
+                margin-bottom: 4px;
+                display: inline-block;
+            }
+
+            
+            .bg-light {
+                background-color: #faf0e6 !important;
+            }
+
+            .text-accent {
+                color: #8b4513 !important;
+            }
+
+            .btn-accent {
+                background-color: #f5deb3 !important;
+                border-color: #f5deb3 !important;
+                color: #654321 !important;
+            }
+
+            .btn-accent:hover {
+                background-color: #d2b48c !important;
+                border-color: #d2b48c !important;
+                color: #654321 !important;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+            <div class="container">
+                <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+                    <i class="fas fa-map-marked-alt me-2"></i>TripcraftAI
+                </a>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('index') }}">
+                                <i class="fas fa-home me-1"></i>Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('my_itineraries') }}"
+                            >
+                                <i class="fas fa-list me-1"></i>My Itineraries
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('chatbot') }}">
+                                <i class="fas fa-robot me-1"></i>Travel
+                                Companion
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %}
+        <div class="container mt-3">
+            {% for category, message in messages %}
+            <div
+                class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show"
+                role="alert"
+            >
+                <i
+                    class="fas fa-{{ 'exclamation-circle' if category == 'error' else 'check-circle' }} me-2"
+                ></i>
+                {{ message }}
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                ></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %} {% endwith %}
+
+        <!-- Main Content -->
+        <main>{% block content %}{% endblock %}</main>
+
+        <!-- Footer -->
+        <footer class="bg-dark text-light py-4 mt-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>
+                            <i class="fas fa-map-marked-alt me-2"></i>TripcraftAI
+                        </h5>
+                        <p class="mb-0">
+                            AI-powered travel planning for Indian tourists
+                        </p>
                     </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-
-    <!-- Main Content -->
-    <main>
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-light py-4 mt-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5><i class="fas fa-map-marked-alt me-2"></i> TripCraftAI</h5>
-                    <p class="mb-0">AI-powered travel planning for Indian tourists</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <!-- <p class="mb-0">&copy; 2024  TripCraftAI. Made with <i class="fas fa-heart text-danger"></i> for travelers.</p> -->
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0">
+                            &copy; 2024 TripcraftAI. Made with
+                            <i class="fas fa-heart text-danger"></i> for
+                            travelers.
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </footer>
+        </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- SortableJS for drag and drop -->
-    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-    <!-- React Bundle -->
-    <script src="{{ url_for('static', filename='js/react-bundle.js') }}"></script>
-    {% block scripts %}{% endblock %}
-    {% block extra_js %}{% endblock %}
-</body>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Leaflet JS -->
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <!-- SortableJS for drag and drop -->
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+        <!-- Custom JS -->
+        <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+        <!-- React Bundle -->
+        <script src="{{ url_for('static', filename='js/react-bundle.js') }}"></script>
+        {% block scripts %}{% endblock %} {% block extra_js %}{% endblock %}
+    </body>
 </html>
