@@ -257,7 +257,7 @@ def chatbot(itinerary_id=None):
     if itinerary_id:
         itinerary = TravelItinerary.query.get_or_404(itinerary_id)
         
-        # Generate contextual suggestions
+        
         chatbot_service = TravelChatbot()
         context = chatbot_service.get_contextual_suggestions(
             itinerary.destination, 
@@ -278,10 +278,10 @@ def chatbot_api():
         if not message:
             return jsonify({'success': False, 'error': 'Message is required'})
         
-        # Initialize chatbot
+
         chatbot_service = TravelChatbot()
         
-        # Get itinerary context if provided
+        
         itinerary_context = None
         user_preferences = None
         
@@ -315,6 +315,116 @@ def chatbot_api():
 def not_found(error):
     return render_template('404.html'), 404
 
+
+@app.route('/itinerary/<int:itinerary_id>/download')
+def download_itinerary_pdf(itinerary_id):
+    
+    itinerary = TravelItinerary.query.get_or_404(itinerary_id)
+    checkpoints = Checkpoint.query.filter_by(itinerary_id=itinerary_id).order_by(Checkpoint.day, Checkpoint.time).all()
+    
+    days_data = {}
+    for checkpoint in checkpoints:
+        if checkpoint.day not in days_data:
+            days_data[checkpoint.day] = []
+        days_data[checkpoint.day].append(checkpoint)
+
+    
+    pdf_data = create_itinerary_pdf(itinerary, days_data) 
+
+    
+    return Response(
+        pdf_data,
+        mimetype='application/pdf',
+        headers={
+            'Content-Disposition': f'attachment;filename={itinerary.destination.lower().replace(" ", "_")}_itinerary.pdf'
+        }
+    )
+
+
+class PDF(FPDF):
+    def header(self):
+    
+        self.set_font('Helvetica', 'B', 15)
+        
+        self.cell(80)
+        self.cell(30, 10, 'TripCraftAI Itinerary', 0, 0, 'C')
+        self.ln(20)
+
+    def footer(self):
+
+        self.set_y(-15)
+        self.set_font('Helvetica', 'I', 8)
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+
+class PDF(FPDF):
+    def header(self):
+    
+        self.set_font('Helvetica', 'B', 15)
+        
+        self.cell(80)
+        self.cell(30, 10, 'TripCraftAI Itinerary', 0, 0, 'C')
+        
+        self.ln(20)
+
+    def footer(self):
+
+        self.set_y(-15)
+
+        self.set_font('Helvetica', 'I', 8)
+        
+        self.cell(0, 10, f'Page {self.page_no()}', 0, 0, 'C')
+
+def create_itinerary_pdf(itinerary, days_data):
+    """Generates a PDF document for the itinerary using FPDF2."""
+    
+    pdf = PDF()
+    pdf.add_page()
+    
+    # --- Itinerary Header ---
+    pdf.set_font('Helvetica', 'B', 24)
+    pdf.cell(0, 10, f'{itinerary.destination}', 0, 1, 'L')
+    
+    pdf.set_font('Helvetica', '', 12)
+    pdf.cell(0, 10, f"{itinerary.duration} Days | Budget: Rs {itinerary.budget:,.0f} | Created: {itinerary.created_at.strftime('%b %d, %Y')}", 0, 1, 'L')
+    pdf.ln(10)
+
+    
+    for day_num in range(1, itinerary.duration + 1):
+        day_data = days_data.get(day_num, [])
+        
+        pdf.set_font('Helvetica', 'B', 16)
+        pdf.cell(0, 10, f'Day {day_num}', 0, 1, 'L')
+        pdf.line(pdf.get_x(), pdf.get_y(), pdf.get_x() + 190, pdf.get_y()) # Underline
+        pdf.ln(5)
+        
+        if day_data:
+            for checkpoint in day_data:
+                pdf.set_font('Helvetica', 'B', 12)
+                pdf.cell(0, 8, f"{checkpoint.time} - {checkpoint.location}", 0, 1)
+                
+                pdf.set_font('Helvetica', '', 12)
+                
+                pdf.multi_cell(0, 8, f"Activity: {checkpoint.activity}")
+                
+                if checkpoint.estimated_cost > 0:
+                    pdf.cell(0, 8, f"Est. Cost: Rs {checkpoint.estimated_cost:,.0f}", 0, 1)
+                pdf.ln(5) 
+        else:
+            pdf.set_font('Helvetica', 'I', 12)
+            pdf.cell(0, 10, 'No activities planned for this day.', 0, 1)
+            pdf.ln(5)
+
+    return bytes(pdf.output(dest='S'))
+
+recommendation_service = RecommendationService()
+
+@app.route('/recommendations')
+def recommendations():
+
+    recommended_destinations = recommendation_service.get_recommendations()
+    
+    return render_template('recommendations.html', recommendations=recommended_destinations)
 @app.errorhandler(500)
 def internal_error(error):
     db.session.rollback()
