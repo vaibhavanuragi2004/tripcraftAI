@@ -20,9 +20,15 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET") or "dev-key-change-in-production"
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
+POSTGRES_USER = os.environ.get("POSTGRES_USER")
+POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")
+POSTGRES_DB = os.environ.get("POSTGRES_DB")
+POSTGRES_HOST = os.environ.get("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = os.environ.get("POSTGRES_PORT", 5432)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///travel_app.db"
-
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+)
 
 db.init_app(app)
 
