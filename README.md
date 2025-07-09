@@ -25,7 +25,7 @@ https://drive.google.com/drive/folders/1bGAr_SKIhsM6PsVk2qbbqm31QZaLh4z0
 
 ## 📄 Project Slides (PPT)
 
-[🔗 Download TripCraftAI Project Slides (PPT)](media/travel_itinerary_slides.pptx)
+[🔗 Download TripCraftAI Project Slides (PPT)](media/submission20251 (1).pptx)
 
 ---
 
