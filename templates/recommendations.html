@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Trip Recommendations - TripCraftAI{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">Destinations You Might Like</h1>
+        <p class="lead">Based on your past travel history, we think you'll love these places!</p>
+    </div>
+
+    {% if recommendations %}
+        <div class="row">
+            {% for destination in recommendations %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm recommendation-card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ destination }}</h5>
+                        <p class="card-text text-muted">A great choice for your next adventure.</p>
+                        
+                      
+                        <form action="{{ url_for('index') }}" method="get">
+                            <input type="hidden" name="destination" value="{{ destination }}">
+                            <button type="submit" class="btn btn-primary mt-3">Plan a Trip Here</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center" role="alert">
+            <h4 class="alert-heading">Not enough data yet!</h4>
+            <p>We don't have enough of your travel history to make personalized recommendations. Plan a few trips, and we'll start suggesting new adventures for you!</p>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.recommendation-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.recommendation-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+</style>
+{% endblock %}
