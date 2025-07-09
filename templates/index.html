@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 
 {% block title %}Create Your Perfect Indian Travel Itinerary - TravelAI{% endblock %}
@@ -11,10 +12,11 @@
                 <h1 class="display-4 fw-bold text-primary mb-4">
                     Plan Your Perfect <span class="text-accent">Indian Adventure</span>
                 </h1>
-                <p class="lead mb-4">
+                <p class="lead mb-4" style="color: black;">
                     AI-powered travel planning designed specifically for Indian tourists. 
                     Get personalized itineraries with checkpoints, budget tracking, and local insights.
                 </p>
+
                 <div class="hero-features mb-4">
                     <div class="feature-item">
                         <i class="fas fa-robot text-accent me-2"></i>
@@ -31,15 +33,66 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="hero-image">
-                    <img src="https://pixabay.com/get/g2a85fbcf46bd8380cd75feb1bce5241d8b9935f3bb98c9c5921c64d1b03efe4148e05ac8c0870506c00b65d13c643fecf57fd423e4ee9106f98685ce02ec3c00_1280.jpg" 
-                         alt="Indian landmarks" class="img-fluid rounded-4 shadow-lg">
-                </div>
+                <div class="col-lg-6">
+    <div class="hero-image">
+        <img src="https://static.toiimg.com/img/101487744/Master.jpg" 
+             alt="Varanasi Ghats" 
+             class="slideshow-image active img-fluid rounded-4 shadow-lg">
+        
+        <img src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=2071&auto=format&fit=crop" 
+             alt="Taj Mahal" 
+             class="slideshow-image img-fluid rounded-4 shadow-lg">
+        
+        <img src="https://upload.wikimedia.org/wikipedia/commons/1/15/Gwalior_Fort_front.jpg" 
+             alt="Kerala Backwaters" 
+             class="slideshow-image img-fluid rounded-4 shadow-lg">
+
+        <img src="https://images.unsplash.com/photo-1598324789736-4861f4354ce8?q=80&w=2070&auto=format&fit=crop" 
+             alt="Hawa Mahal Jaipur" 
+             class="slideshow-image img-fluid rounded-4 shadow-lg">
+    </div>
+</div>
+
+<style>
+    .hero-image {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        overflow: hidden;
+    }
+    .slideshow-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0;
+        transition: opacity 1.5s ease-in-out;
+    }
+    .slideshow-image.active {
+        opacity: 1;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const images = document.querySelectorAll('.hero-image .slideshow-image');
+        let currentIndex = 0;
+        const slideInterval = 4000;
+
+        function showNextImage() {
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
+        }
+        setInterval(showNextImage, slideInterval);
+    });
+</script>
             </div>
         </div>
     </div>
 </section>
-
 <!-- Travel Planning Form -->
 <section class="py-5 bg-light">
     <div class="container">
