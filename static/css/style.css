@@ -1,0 +1,1098 @@
+/* Custom CSS Variables for Indian Travel Theme */
+:root {
+    --primary: 255 107 53; /* #FF6B35 - vibrant orange */
+    --secondary: 0 78 137; /* #004E89 - deep blue */
+    --accent: 255 210 63; /* #FFD23F - golden yellow */
+    --background: 248 249 250; /* #F8F9FA - light grey */
+    --text: 44 62 80; /* #2C3E50 - dark blue-grey */
+    --success: 39 174 96; /* #27AE60 - green */
+    --spacing: 16px;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: hsl(var(--background));
+    color: hsl(var(--text));
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+
+/* Custom Bootstrap Color Classes */
+.bg-primary {
+    background-color: hsl(var(--primary)) !important;
+}
+
+.text-primary {
+    color: hsl(var(--primary)) !important;
+}
+
+.btn-primary {
+    background-color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: hsl(var(--primary) / 0.9);
+    border-color: hsl(var(--primary) / 0.9);
+}
+
+.btn-outline-primary {
+    color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+}
+
+.btn-outline-primary:hover {
+    background-color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+    color: white;
+}
+
+/* Drag and Drop Styles */
+.checkpoint-card {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.checkpoint-drag-handle {
+    position: absolute;
+    left: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: grab;
+    padding: 5px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.checkpoint-card:hover .checkpoint-drag-handle {
+    opacity: 1;
+}
+
+.checkpoint-drag-handle:active {
+    cursor: grabbing;
+}
+
+.sortable-ghost {
+    opacity: 0.4;
+}
+
+.sortable-chosen {
+    transform: rotate(2deg);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.sortable-drag {
+    transform: rotate(5deg);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.opening-hours {
+    margin-top: 8px;
+    padding: 4px 8px;
+    background-color: hsl(var(--background));
+    border-radius: 4px;
+    border-left: 3px solid hsl(var(--accent));
+}
+
+.travel-info {
+    padding: 4px 8px;
+    background-color: rgba(13, 110, 253, 0.1);
+    border-radius: 4px;
+    border-left: 3px solid #0d6efd;
+}
+
+.travel-tips {
+    padding: 4px 8px;
+    background-color: rgba(25, 135, 84, 0.1);
+    border-radius: 4px;
+    border-left: 3px solid #198754;
+}
+
+.checkpoint-card {
+    margin-left: 15px;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: white;
+}
+
+.checkpoint-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.sortable-checkpoints {
+    min-height: 50px;
+}
+
+/* Timeline Styles */
+.timeline-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.timeline-day {
+    margin-bottom: 60px;
+    position: relative;
+}
+
+.day-header-timeline {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    border-radius: 15px;
+    color: white;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.day-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.day-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: hsl(var(--primary));
+}
+
+.day-info {
+    flex: 1;
+}
+
+.day-title {
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.day-progress-info {
+    margin-top: 10px;
+}
+
+.progress-text {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.progress-bar-custom {
+    width: 200px;
+    height: 6px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+    margin-top: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: hsl(var(--accent));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.timeline-activities {
+    position: relative;
+    padding-left: 50px;
+}
+
+.timeline-activities::before {
+    content: '';
+    position: absolute;
+    left: 25px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, hsl(var(--primary)), hsl(var(--accent)));
+    border-radius: 2px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.timeline-marker {
+    position: relative;
+    margin-right: 25px;
+    display: flex;
+    align-items: center;
+}
+
+.marker-dot {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid hsl(var(--primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.marker-dot.completed {
+    background: hsl(var(--success));
+    border-color: hsl(var(--success));
+    color: white;
+}
+
+.marker-time {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: hsl(var(--primary));
+}
+
+.drag-handle {
+    position: absolute;
+    left: -15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    background: hsl(var(--primary));
+    color: white;
+    width: 20px;
+    height: 30px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+}
+
+.timeline-item:hover .drag-handle {
+    opacity: 1;
+}
+
+.timeline-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.activity-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, hsl(var(--primary)), hsl(var(--accent)));
+}
+
+.activity-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.activity-time {
+    font-size: 1rem;
+    color: hsl(var(--primary));
+    font-weight: 600;
+}
+
+.activity-cost {
+    background: hsl(var(--accent));
+    color: hsl(var(--text));
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.activity-location {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: hsl(var(--text));
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.activity-description {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.activity-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.detail-item.opening-hours {
+    background: rgba(108, 117, 125, 0.1);
+    color: #495057;
+}
+
+.detail-item.travel-info {
+    background: rgba(13, 110, 253, 0.1);
+    color: #0d6efd;
+}
+
+.detail-item.travel-tips {
+    background: rgba(25, 135, 84, 0.1);
+    color: #198754;
+}
+
+.completion-status {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.completed-badge {
+    background: linear-gradient(135deg, hsl(var(--success)), #28a745);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    display: inline-block;
+    font-weight: 600;
+}
+
+.completion-form {
+    margin-top: 15px;
+}
+
+.completion-form .form-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.completion-form .form-control {
+    flex: 1;
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 10px 15px;
+}
+
+.completion-form .form-control:focus {
+    border-color: hsl(var(--primary));
+    box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+}
+
+.btn-complete {
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pulse-btn {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(255, 107, 53, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+}
+
+.timeline-empty {
+    padding-left: 50px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    color: #999;
+    background: #f8f9fa;
+    border-radius: 15px;
+    border: 2px dashed #dee2e6;
+}
+
+.empty-state i {
+    font-size: 3rem;
+    color: #ccc;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .timeline-container {
+        padding: 10px;
+    }
+    
+    .day-header-timeline {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .day-circle {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .timeline-activities {
+        padding-left: 30px;
+    }
+    
+    .timeline-activities::before {
+        left: 15px;
+    }
+    
+    .marker-dot {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .activity-card {
+        padding: 20px;
+    }
+    
+    .completion-form .form-group {
+        flex-direction: column;
+    }
+    
+    .completion-form .form-control {
+        margin-bottom: 10px;
+    }
+}
+
+.text-accent {
+    color: hsl(var(--accent)) !important;
+}
+
+.bg-accent {
+    background-color: hsl(var(--accent)) !important;
+}
+
+.btn-accent {
+    background-color: hsl(var(--accent));
+    border-color: hsl(var(--accent));
+    color: hsl(var(--text));
+    font-weight: 600;
+}
+
+.btn-accent:hover {
+    background-color: hsl(var(--accent) / 0.9);
+    border-color: hsl(var(--accent) / 0.9);
+    color: hsl(var(--text));
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.1), hsl(var(--secondary) / 0.1));
+    padding: 60px 0;
+}
+
+.hero-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing);
+}
+
+.feature-item {
+    background: white;
+    padding: 8px var(--spacing);
+    border-radius: 25px;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.hero-image img {
+    border-radius: var(--spacing);
+}
+
+/* Form Styles */
+.form-check-card {
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.form-check-card:hover {
+    border-color: hsl(var(--primary));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
+}
+
+.form-check-card .form-check-input:checked ~ .form-check-label {
+    color: hsl(var(--primary));
+    font-weight: 600;
+}
+
+.form-check-card .form-check-input:checked {
+    background-color: hsl(var(--primary));
+    border-color: hsl(var(--primary));
+}
+
+/* Feature Cards */
+.feature-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: var(--spacing);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px hsl(var(--primary) / 0.15);
+    border-color: hsl(var(--primary) / 0.3);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+    color: white;
+}
+
+/* Progress Styles */
+.progress-lg {
+    height: 12px;
+    border-radius: 6px;
+}
+
+.progress-card {
+    background: white;
+    border-radius: var(--spacing);
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+}
+
+.stats-grid {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: flex-end;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+/* Itinerary Styles */
+.day-card {
+    background: white;
+    border-radius: var(--spacing);
+    box-shadow: 0 2px 15px hsl(var(--text) / 0.1);
+    overflow: hidden;
+}
+
+.day-header {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    color: white;
+    padding: 1rem 1.5rem;
+}
+
+.day-title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.day-number {
+    background: hsl(var(--secondary));
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    margin-right: 1rem;
+}
+
+.day-progress {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.day-content {
+    padding: 1.5rem;
+}
+
+.checkpoint-card {
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.checkpoint-card:hover {
+    border-color: hsl(var(--primary) / 0.3);
+    box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
+}
+
+.checkpoint-card.completed {
+    border-color: hsl(var(--success));
+    background: hsl(var(--success) / 0.05);
+}
+
+.checkpoint-time {
+    font-weight: 600;
+    color: hsl(var(--primary));
+    margin-bottom: 0.5rem;
+}
+
+.checkpoint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+.checkpoint-location {
+    margin: 0;
+    color: hsl(var(--text));
+    font-weight: 600;
+}
+
+.checkpoint-cost {
+    background: hsl(var(--accent));
+    color: hsl(var(--text));
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.checkpoint-description {
+    color: #6c757d;
+    margin-bottom: 1rem;
+}
+
+.checkpoint-completed {
+    background: hsl(var(--success) / 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+}
+
+.checkpoint-form {
+    margin-top: 1rem;
+}
+
+/* Timeline Styles */
+.timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 2rem;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: #e9ecef;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.timeline-item.completed .timeline-marker {
+    background: hsl(var(--success));
+    color: white;
+}
+
+.timeline-item.pending .timeline-marker {
+    background: hsl(var(--primary));
+    color: white;
+}
+
+.timeline-content {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-title {
+    margin: 0;
+    color: hsl(var(--text));
+    font-weight: 600;
+}
+
+.timeline-time {
+    background: hsl(var(--accent));
+    color: hsl(var(--text));
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.timeline-description {
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-cost {
+    font-weight: 600;
+    color: hsl(var(--primary));
+    margin-bottom: 0.5rem;
+}
+
+.timeline-status.completed {
+    background: hsl(var(--success) / 0.1);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    color: hsl(var(--success));
+}
+
+/* Tracking Styles */
+.current-status-card {
+    background: white;
+    border-radius: var(--spacing);
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px hsl(var(--text) / 0.1);
+}
+
+.current-location {
+    margin-top: 0.5rem;
+}
+
+.location-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: hsl(var(--text));
+}
+
+.location-time {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.map-container {
+    height: 400px;
+    background: #f8f9fa;
+    border-radius: 0 0 var(--spacing) var(--spacing);
+    position: relative;
+}
+
+.map-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(var(--primary) / 0.05));
+}
+
+.map-content {
+    text-align: center;
+}
+
+.map-legend {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-dot.completed {
+    background: hsl(var(--success));
+}
+
+.legend-dot.current {
+    background: hsl(var(--primary));
+}
+
+.legend-dot.pending {
+    background: #e9ecef;
+}
+
+.live-updates {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.update-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.update-item:last-child {
+    border-bottom: none;
+}
+
+.update-time {
+    font-size: 0.875rem;
+    color: #6c757d;
+    white-space: nowrap;
+    min-width: 80px;
+}
+
+.update-message {
+    flex: 1;
+    font-size: 0.875rem;
+}
+
+/* My Itineraries */
+.itinerary-summary-card {
+    background: white;
+    border-radius: var(--spacing);
+    box-shadow: 0 2px 15px hsl(var(--text) / 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.itinerary-summary-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px hsl(var(--primary) / 0.15);
+}
+
+.itinerary-summary-card .card-header {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    color: white;
+    padding: 1rem 1.5rem;
+    border: none;
+}
+
+.itinerary-summary-card .card-body {
+    padding: 1.5rem;
+}
+
+.interests-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.interest-tag {
+    background: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.card-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.empty-state {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Budget Breakdown */
+.budget-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.budget-item:hover {
+    border-color: hsl(var(--primary) / 0.3);
+    transform: translateY(-2px);
+}
+
+.budget-category {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.budget-amount {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: hsl(var(--primary));
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-features {
+        flex-direction: column;
+    }
+    
+    .stats-grid {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .checkpoint-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .timeline-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .map-legend {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .card-actions {
+        flex-direction: column;
+    }
+}
+
+/* Loading States */
+.btn:disabled {
+    opacity: 0.7;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Custom Scrollbar */
+.live-updates::-webkit-scrollbar {
+    width: 6px;
+}
+
+.live-updates::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.live-updates::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 3px;
+}
+
+.live-updates::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.8);
+}
